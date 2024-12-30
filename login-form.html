@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Form</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="balloons">
+        <img src="b1.jpeg" alt="Balloon" class="balloon">
+        <img src="b1.jpeg" alt="Balloon" class="balloon">
+        <img src="b1.jpeg" alt="Balloon" class="balloon">
+        <img src="b1.jpeg" alt="Balloon" class="balloon">
+        <img src="b1.jpeg" alt="Balloon" class="balloon">
+        <img src="b1.jpeg" alt="Balloon" class="balloon">
+        <img src="b1.jpeg" alt="Balloon" class="balloon">
+        <img src="b1.jpeg" alt="Balloon" class="balloon">
+        <img src="b1.jpeg" alt="Balloon" class="balloon">
+        <img src="b1.jpeg" alt="Balloon" class="balloon">
+    </div>
+    <div class="login-container">
+        <h2>Sign In</h2>
+        <form id="loginForm" action="PersonalInformationSystem.html" method="POST">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required onkeyup="validateUsername()">
+            <div id="username-validation" class="validation-message"></div>
+            <label for="password">Password</label>
+            <div class="password-container">
+                <input type="password" id="password" name="password" required onkeyup="validatePassword()">
+                <span id="togglePassword" class="eye-icon" onclick="togglePassword('password')">👁️</span>
+            </div>
+            <div id="password-validation" class="validation-message"></div>
+            <button type="submit">Sign In</button>
+        </form>
+        <div class="links">
+            <a href="forgot-password-form.html">Forgot Password?</a>  
+            <a href="registeration-form.html">New User?</a>
+        </div>
+    </div>
+    <script>
+        let usernameTimeout, passwordTimeout;
+        function togglePassword() {
+            const passwordField = document.getElementById('password');
+            const toggleIcon = document.getElementById('togglePassword');
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                toggleIcon.textContent = "🙈"; 
+            } else {
+                passwordField.type = "password";
+                toggleIcon.textContent = "👁️"; 
+            }
+        }
+function validateUsername() {
+    const username = document.getElementById('username').value;
+    const validationMessage = document.getElementById('username-validation');
+    if (username.trim() === "") {
+        validationMessage.textContent = "";
+        return;
+    }
+    clearTimeout(usernameTimeout);
+    usernameTimeout = setTimeout(() => {
+        fetch("validate-username.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: "username=" + encodeURIComponent(username)
+        })
+        .then(response => response.text()) 
+        .then(data => {
+            validationMessage.textContent = data;  
+            validationMessage.style.color = data === "Valid username" ? "green" : "red";
+        })
+        .catch(error => {
+            validationMessage.textContent = "Error validating username.";
+            validationMessage.style.color = "red";
+        });
+    }, 500);
+}
+function validatePassword() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const passwordValidationMessage = document.getElementById('password-validation');
+    if (username.trim() === "") {
+        passwordValidationMessage.textContent = "Please enter your username first.";
+        passwordValidationMessage.style.color = "red";
+        return;
+    }
+    if (password.trim() === "") {
+        passwordValidationMessage.textContent = "";
+        return;
+    }
+    clearTimeout(passwordTimeout);
+    passwordTimeout = setTimeout(() => {
+        fetch("validate-password.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: "username=" + encodeURIComponent(username) + "&password=" + encodeURIComponent(password)
+        })
+        .then(response => response.text()) 
+        .then(data => {
+            passwordValidationMessage.textContent = data;  
+            passwordValidationMessage.style.color = data === "Valid password" ? "green" : "red";
+        })
+        .catch(error => {
+            passwordValidationMessage.textContent = "Error validating password.";
+            passwordValidationMessage.style.color = "red";
+        });
+    }, 500); 
+}
+    </script>
+</body>
+</html>

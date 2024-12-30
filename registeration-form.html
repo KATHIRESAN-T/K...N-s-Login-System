@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="balloons">
+        <img src="b1.jpeg" alt="Balloon" class="balloon">
+        <img src="b1.jpeg" alt="Balloon" class="balloon">
+        <img src="b1.jpeg" alt="Balloon" class="balloon">
+        <img src="b1.jpeg" alt="Balloon" class="balloon">
+        <img src="b1.jpeg" alt="Balloon" class="balloon">
+        <img src="b1.jpeg" alt="Balloon" class="balloon">
+        <img src="b1.jpeg" alt="Balloon" class="balloon">
+        <img src="b1.jpeg" alt="Balloon" class="balloon">
+        <img src="b1.jpeg" alt="Balloon" class="balloon">
+        <img src="b1.jpeg" alt="Balloon" class="balloon">
+    </div>
+    <div class="registration-container">
+        <h2>Registration Yourself</h2>
+        <form id="registrationForm">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" required>
+            <label for="dob">Date of Birth</label>
+            <input type="date" id="dob" name="dob" required onchange="validateDOB()">
+            <div id="dob-validation" class="validation-message"></div>
+            <label for="gender">Gender</label>
+            <select id="gender" name="gender" required>
+                <option class="options" value="Male">Male</option>
+                <option class="options" value="Female">Female</option>
+                <option class="options" value="Other">Other</option>
+            </select>
+            <label for="phone">Phone Number</label>
+            <input type="text" id="phone" name="phone" required pattern="\d{10}" title="Enter a valid 10-digit phone number" onkeyup="validatePhone()">
+            <div id="phone-validation" class="validation-message"></div>
+            <label for="mail">Mail ID</label>
+            <input type="email" id="mail" name="mail" required onkeyup="validateEmail()">
+            <div id="email-validation" class="validation-message"></div>
+            <label for="username">Set Username</label>
+            <input type="text" id="username" name="username" required onkeyup="validateUsername()">
+            <div id="username-validation" class="validation-message"></div>
+            <label for="password">Set Password</label>
+            <div class="password-container">
+                <input type="password" id="password" name="password" required>
+                <span id="togglePassword" class="eye-icon" onclick="togglePassword()">👁️</span>
+            </div>
+            <label for="confirm_password">Confirm Password</label>
+            <div class="password-container">
+                <input type="password" id="confirm_password" name="confirm_password" required>
+                <span id="toggleConfirmPassword" class="eye-icon" onclick="toggleConfirmPassword()">👁️</span>
+            </div>
+            <label for="security_pin">Set Security Pin</label>
+            <input type="number" id="security_pin" name="security_pin" required min="1000" max="9999">
+            <br>
+            <button type="submit">Register Now</button>
+        </form>
+        <div id="response-message" class="response-message"></div>
+        <div class="links">
+            <a href="login-form.html">Sign In?</a> 
+        </div>
+    </div>
+    <script>
+        function validateUsername() {
+            const username = document.getElementById('username').value;
+            const usernameValidation = document.getElementById('username-validation');
+            if (username.trim() === "") {
+                usernameValidation.textContent = "Please enter a username.";
+                usernameValidation.classList.add('invalid-message');
+                usernameValidation.classList.remove('valid-message');
+                return;
+            }
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "validate-register-username.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    usernameValidation.textContent = xhr.responseText;
+                    if (xhr.responseText === "Valid username") {
+                        usernameValidation.classList.add('valid-message');
+                        usernameValidation.classList.remove('invalid-message');
+                    } else {
+                        usernameValidation.classList.add('invalid-message');
+                        usernameValidation.classList.remove('valid-message');
+                    }
+                }
+            };
+            xhr.send("username=" + encodeURIComponent(username));
+        }
+        function validatePhone() {
+            const phone = document.getElementById('phone').value;
+            const phoneValidation = document.getElementById('phone-validation');
+            if (phone === "") {
+                phoneValidation.textContent = "";
+                return;
+            }
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "validate-phone.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    phoneValidation.textContent = xhr.responseText;
+                    if (xhr.responseText === "Valid phone number") {
+                        phoneValidation.classList.add('valid-message');
+                        phoneValidation.classList.remove('invalid-message');
+                    } else {
+                        phoneValidation.classList.add('invalid-message');
+                        phoneValidation.classList.remove('valid-message');
+                    }
+                }
+            };
+            xhr.send("phone=" + encodeURIComponent(phone));
+        }
+        function validateEmail() {
+            const email = document.getElementById('mail').value;
+            const emailValidation = document.getElementById('email-validation');
+            if (email === "") {
+                emailValidation.textContent = "";
+                return;
+            }
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "validate-email.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    emailValidation.textContent = xhr.responseText;
+                    if (xhr.responseText === "Valid email address") {
+                        emailValidation.classList.add('valid-message');
+                        emailValidation.classList.remove('invalid-message');
+                    } else {
+                        emailValidation.classList.add('invalid-message');
+                        emailValidation.classList.remove('valid-message');
+                    }
+                }
+            };
+            xhr.send("email=" + encodeURIComponent(email));
+        }
+        function validateDOB() {
+    const dobInput = document.getElementById('dob');
+    const dobValidation = document.getElementById('dob-validation');
+    const dobValue = dobInput.value;
+        if (dobValue === "") {
+        dobValidation.textContent = "Please enter your date of birth.";
+        dobValidation.classList.add('invalid-message');
+        dobValidation.classList.remove('valid-message');
+        return;
+    }
+    const dob = new Date(dobValue);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+        if (dob > today) {
+        dobValidation.textContent = "Invalid Date of Birth";
+        dobValidation.classList.add('invalid-message');
+        dobValidation.classList.remove('valid-message');
+        return;
+    }
+    const currentYear = today.getFullYear();
+    const maxValidYear = currentYear - 120;
+    if (dob.getFullYear() < maxValidYear) {
+        dobValidation.textContent = "Invalid Date of Birth";
+        dobValidation.classList.add('invalid-message');
+        dobValidation.classList.remove('valid-message');
+        return;
+    }
+    let age = today.getFullYear() - dob.getFullYear();
+    const m = today.getMonth() - dob.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+        age--;
+    }
+    if (age < 18) {
+        dobValidation.textContent = "Not eligible for registration";
+        dobValidation.classList.add('invalid-message');
+        dobValidation.classList.remove('valid-message');
+    } else {
+        dobValidation.textContent = `Age: ${age} years old`;
+        dobValidation.classList.add('valid-message');
+        dobValidation.classList.remove('invalid-message');
+    }
+}
+        function togglePassword() {
+            const passwordField = document.getElementById('password');
+            const toggleIcon = document.getElementById('togglePassword');
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                toggleIcon.textContent = "🙈"; 
+            } else {
+                passwordField.type = "password";
+                toggleIcon.textContent = "👁️"; 
+            }
+        }
+        function toggleConfirmPassword() {
+            const confirmPasswordField = document.getElementById('confirm_password');
+            const toggleIcon = document.getElementById('toggleConfirmPassword');
+            if (confirmPasswordField.type === "password") {
+                confirmPasswordField.type = "text";
+                toggleIcon.textContent = "🙈"; 
+            } else {
+                confirmPasswordField.type = "password";
+                toggleIcon.textContent = "👁️"; 
+            }
+        }
+        document.getElementById('registrationForm').addEventListener('submit', function(event) {
+            event.preventDefault();  
+            const formData = new FormData(this);
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "registeration-form-action.php", true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    // Handle the response and show the result on the same page
+                    const responseMessage = document.getElementById('response-message');
+                    if (xhr.responseText === "Registration successful!") {
+                        responseMessage.innerHTML = `<p class="success-message">${xhr.responseText}</p>`;
+                    } else {
+                        responseMessage.innerHTML = `<p class="error-message">${xhr.responseText}</p>`;
+                    }
+                }
+            };
+            xhr.send(formData);
+        });
+    </script>
+</body>
+</html>
